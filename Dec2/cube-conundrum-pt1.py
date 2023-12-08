@@ -10,62 +10,61 @@ validG = False
 validR = False
 validB = False
 
-game = namedtuple('GameID', ['red', 'green', 'blue'])
 
 values = open('Dec2\puzzle-input.txt', 'r')
 games = values.readlines()
 
 for g in games:
+    # IF all the draws are valid then at the end of this loop validGame == how many draws there were
     validD = 0
-    # To store which ID we have
+    # To store which ID we have and what we are adding
     i = re.search(r'\d+', g).group()
     print("game: ", i)
     # This is the index of the :
     c = g.rfind(':')
     # This is the draws for that game
     temp = g[c+1:]
-    print("Draws: ", temp)
     draws = temp.split(';')
     draws[-1] = draws[-1].replace('\n', '')
-    print("Draws as a list: ", draws)
+    print("Draws for game " + i + ": ", draws)
 
     validG = False
     validR = False
     validB = False
-
+    l = 1
+    greenSeen = 0
+    redSeen = 0
+    blueSeen = 0
     for d in draws:
+
+        # every draw split by color as one list
         x = d.split(',')
-        print("Each draw as a list: ", x)
-        green = 0
-        red = 0
-        blue = 0
+        print("Draw #", str(l), ": ", x)
+
+        greenSeen = 0
+        redSeen = 0
+        blueSeen = 0
+
         for play in x:
+
             if 'green' in play:
-                green = 1
+                greenSeen = 1
                 tempgreen = re.findall(r'\d+', play)
                 if int(tempgreen[0]) <= greenMAX:
                     validG = True
-
                     print(' in green true')
                 else:
                     validG = False
-
-            # else:
-            #     validG = True
             elif 'blue' in play:
-                blue = 1
+                blueSeen = 1
                 tempblue = re.findall(r'\d+', play)
                 if int(tempblue[0]) <= blueMAX:
                     validB = True
                     print(' in blue true')
                 else:
                     validB = False
-
-            # else:
-            #     validB = True
-
             elif 'red' in play:
-                red = 1
+                redSeen = 1
                 tempred = re.findall(r'\d+', play)
 
                 if int(tempred[0]) <= 12:
@@ -73,23 +72,23 @@ for g in games:
                     print(' in red true')
                 else:
                     validR = False
-
-            # else:
-            #     validR = True
-        print(red, blue, green)
-        if red == 0:
+        # print(greenSeen)
+        if redSeen == 0:
             validR = True
-        elif blue == 0:
+        if blueSeen == 0:
             validB = True
-        elif green == 0:
+        if greenSeen == 0:
             validG = True
 
         if validR and validB and validG:
             validD += 1
             print(' draw was true')
-    print(str(validD))
+        # print(validB, validG, validR)
+        l += 1
+
+    print(str(validD) + " out of " + str(len(draws)))
     if validD == len(draws):
         print("Adding: " + i)
         sum += int(i)
         print('game was true')
-    print(sum, '\n')
+    print("Sum: ", sum, '\n')
